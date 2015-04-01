@@ -1,11 +1,13 @@
 #!/usr/bin/env python
-"""
-An example of a script reading data from stdin
-or from a while and does some processing on
+"""An example of a script reading data from stdin.
+
+Or from a file and does some processing on
 the lines.
 
 This specific exmaples reads messages in syslog
 and counts them per 'unit'
+
+Usage: cat /var/log/syslog | ./read_stdin.py
 """
 import fileinput
 from collections import defaultdict
