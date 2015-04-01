@@ -10,10 +10,11 @@ and counts them per 'unit'
 Usage: cat /var/log/syslog | ./read_stdin.py
 """
 import fileinput
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 
 
 data = defaultdict(lambda : defaultdict(int))
+Unit = namedtuple('Unit', ('name', 'message'))
 matches = []
 
 out_format = '{}\t{}\t{}'
@@ -24,14 +25,12 @@ for line in fileinput.input():
 
 splits = (match.split(' ') for match in matches)
 
-# this nees to change to handle potential duplicate
-# messages for one unit
 for s in splits:
     timestamp = s[2]
     unit = s[5]
     message = ' '.join(s[6:])
-    data[unit]['count'] += 1
-    data[unit]['message'] = message
+    u = Unit(unit, message)
+    data[u]['count'] += 1
 
-for k in data.keys():
-    print(out_format.format(k, data[k]['message'], data[k]['count']))
+for unit in data.keys():
+    print(out_format.format(unit.name, unit.message, data[unit]['count']))
