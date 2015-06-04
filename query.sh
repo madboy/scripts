@@ -6,30 +6,23 @@
 
 if [ "$1" = "and" ]; then
     shift
-    WORD1=$1
-    WORD2=$2
-    RES=`grep -ril "$WORD1" * | xargs grep -li "$WORD2"`
+    MATCH="$1\|$2"
+    RES=`grep -ril "$1" * | xargs grep -li "$2"`
 elif [ "$1" = "or" ]; then
     shift
-    WORD1=$1
-    WORD2=$2
-    RES=`grep -ril "$WORD1\|$WORD2" *`
-    MATCH="$WORD1\|$WORD2"
+    MATCH="$1\|$2"
+    RES=`grep -ril "$MATCH" *`
 elif [ "$1" = "match" ]; then
     shift
-    WORD1=$1
-    RES=`grep -rilw $WORD1 *`
+    RES=`grep -rilw $1 *`
 else
-    WORD1=$1
-    RES=`grep -ril $WORD1 *`
+    RES=`grep -ril $1 *`
 fi
 
 if [ "$RES" = "" ]; then
     echo "Cannot find any matching files"
 elif [ -n "$MATCH" ]; then
-    # echo 'vim +/"$MATCH" $RES'
     vim +/"$MATCH" $RES
 else
-    # echo 'vim +/$WORD1 $RES'
-    vim +/$WORD1 $RES
+    vim +/$1 $RES
 fi
