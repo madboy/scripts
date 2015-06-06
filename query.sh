@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Search all the files in the directory for differnt combinations
+# Search all the files in the directory for different combinations
 # of words
 # When we have matches open vim buffers for all of the matching files
 
