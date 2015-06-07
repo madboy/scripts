@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# set -ex
 
 # Search all the files in the directory for different combinations
 # of words
@@ -9,7 +10,7 @@ no_editor="false"
 regular_grep() {
     # recursive search, ignore case, only get one line per file
     # ignore binary
-    FLAGS="-riI"
+    FLAGS="-riIn"
 
     if [ "$1" = "and" ]; then
         shift
@@ -55,7 +56,26 @@ regular_grep() {
 }
 
 git_grep() {
-    git grep -Ovi -iI $1
+    if [ "$no_editor" = true ]; then
+        FLAGS="-niI"
+    else
+        FLAGS="-Ovi -iI"
+    fi
+
+    # this and behaves differently from the regular grep
+    # only matches on the same line instead of in the same file
+    if [ "$1" = "and" ]; then
+        shift
+        git grep $FLAGS -e "$1" --and -e "$2"
+    elif [ "$1" = "or" ]; then
+        shift
+        git grep $FLAGS -e "$1" --or -e "$2"
+    elif [ "$1" = "match" ]; then
+        shift
+        git grep $FLAGS -w $1
+    else
+        git grep $FLAGS $1
+    fi
 }
 
 # Do we have a directory as last argument
