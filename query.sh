@@ -4,33 +4,53 @@
 # of words
 # When we have matches open vim buffers for all of the matching files
 
+no_editor="false"
+
 regular_grep() {
     # recursive search, ignore case, only get one line per file
     # ignore binary
-    FLAGS="-rilI"
+    FLAGS="-riI"
 
     if [ "$1" = "and" ]; then
         shift
         MATCH="$1\|$2"
-        RES=`grep $FLAGS "$1" * | xargs grep -li "$2"`
+        if [ "$no_editor" = "true" ]; then
+            grep $FLAGS "$1" * | xargs grep -i "$2"
+        else
+            RES=`grep $FLAGS -l "$1" * | xargs grep -li "$2"`
+        fi
     elif [ "$1" = "or" ]; then
         shift
         MATCH="$1\|$2"
-        RES=`grep $FLAGS "$MATCH" *`
+        if [ "$no_editor" = "true" ]; then
+            grep $FLAGS "$MATCH" *
+        else
+            RES=`grep $FLAGS -l "$MATCH" *`
+        fi
     elif [ "$1" = "match" ]; then
         shift
-        RES=`grep $FLAGS -w $1 *`
+        if [ "$no_editor" = "true" ]; then
+            grep $FLAGS -w $1 *
+        else
+            RES=`grep $FLAGS -l -w $1 *`
+        fi
     else
-        RES=`grep $FLAGS $1 *`
+        if [ "$no_editor" = "true" ]; then
+            grep $FLAGS $1 *
+        else
+            RES=`grep $FLAGS -l $1 *`
+        fi
     fi
 
-    # open vim with matching files
-    if [ "$RES" = "" ]; then
-        echo "Cannot find any matching files"
-    elif [ -n "$MATCH" ]; then
-        vim +/"$MATCH" $RES
-    else
-        vim +/$1 $RES
+    if [ "$no_editor" = "false" ]; then
+        # open vim with matching files
+        if [ "$RES" = "" ]; then
+            echo "Cannot find any matching files"
+        elif [ -n "$MATCH" ]; then
+            vim +/"$MATCH" $RES
+        else
+            vim +/$1 $RES
+        fi
     fi
 }
 
