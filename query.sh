@@ -10,24 +10,21 @@ regular_grep() {
     # ignore binary
     FLAGS="-riIn"
 
-    if [ "$1" = "and" ]; then
-        shift
+    if [ "$mod" = "and" ]; then
         MATCH="$1\|$2"
         if [ "$no_editor" = "true" ]; then
-            grep $FLAGS "$1" * | xargs grep -i "$2"
+            grep $FLAGS -l "$1" * | xargs grep -i "$2"
         else
             RES=`grep $FLAGS -l "$1" * | xargs grep -li "$2"`
         fi
-    elif [ "$1" = "or" ]; then
-        shift
+    elif [ "$mod" = "or" ]; then
         MATCH="$1\|$2"
         if [ "$no_editor" = "true" ]; then
             grep $FLAGS "$MATCH" *
         else
             RES=`grep $FLAGS -l "$MATCH" *`
         fi
-    elif [ "$1" = "match" ]; then
-        shift
+    elif [ "$mod" = "match" ]; then
         if [ "$no_editor" = "true" ]; then
             grep $FLAGS -w $1 *
         else
@@ -62,14 +59,11 @@ git_grep() {
 
     # this and behaves differently from the regular grep
     # only matches on the same line instead of in the same file
-    if [ "$1" = "and" ]; then
-        shift
+    if [ "$mod" = "and" ]; then
         git grep $FLAGS -e "$1" --and -e "$2"
-    elif [ "$1" = "or" ]; then
-        shift
+    elif [ "$mod" = "or" ]; then
         git grep $FLAGS -e "$1" --or -e "$2"
-    elif [ "$1" = "match" ]; then
-        shift
+    elif [ "$mod" = "match" ]; then
         git grep $FLAGS -w $1
     else
         git grep $FLAGS $1
@@ -79,11 +73,13 @@ git_grep() {
 OPTIND=1
 no_editor="false"
 
-while getopts "d:ev" opt; do
+while getopts "d:em:v" opt; do
     case $opt in
         d) dir=$OPTARG
             ;;
         e) no_editor="true"
+            ;;
+        m) mod=$OPTARG
             ;;
         v) set -ex
             ;;
@@ -94,7 +90,7 @@ done
 
 shift $((OPTIND-1))
 
-if [ -n $dir ]; then
+if [ "$dir" ]; then
     pushd $dir
 fi
 
@@ -105,6 +101,6 @@ else
     regular_grep $@
 fi
 
-if [ -n $dir ]; then
+if [ "$dir" ]; then
     popd
 fi
