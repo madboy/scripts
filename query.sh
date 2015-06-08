@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
-# set -ex
 
 # Search all the files in the directory for different combinations
 # of words
 # When we have matches open vim buffers for all of the matching files
 
-no_editor="false"
 
 regular_grep() {
     # recursive search, ignore case, only get one line per file
@@ -78,11 +76,26 @@ git_grep() {
     fi
 }
 
-# Do we have a directory as last argument
-a=("$@")
-LAST=${a[-1]}
-if [ -d "$LAST" ]; then
-    pushd $LAST
+OPTIND=1
+no_editor="false"
+
+while getopts "d:ev" opt; do
+    case $opt in
+        d) dir=$OPTARG
+            ;;
+        e) no_editor="true"
+            ;;
+        v) set -ex
+            ;;
+        \?) echo "invalid argument -$OPTARG"
+            ;;
+    esac
+done
+
+shift $((OPTIND-1))
+
+if [ -n $dir ]; then
+    pushd $dir
 fi
 
 # prefer git grep if we can
@@ -92,6 +105,6 @@ else
     regular_grep $@
 fi
 
-if [ -d "$LAST" ]; then
+if [ -n $dir ]; then
     popd
 fi
