@@ -52,7 +52,7 @@ regular_grep() {
 
 git_grep() {
     if [ "$no_editor" = true ]; then
-        FLAGS="-niI"
+        FLAGS="-niI -C2"
     else
         FLAGS="-Ovi -iI"
     fi
