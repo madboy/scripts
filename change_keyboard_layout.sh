@@ -4,10 +4,9 @@ LAYOUT=`setxkbmap -query | grep layout | awk '{ print $2}'`
 
 if [ "$LAYOUT" = "se" ]; then
 	echo "Changing keyboard to US"
-	setxkbmap us
+	setxkbmap -option ctrl:nocaps -layout us
 else
 	echo "Changing keyboard to SE"
-	setxkbmap se
+	setxkbmap -option ctrl:nocaps -layout se
 fi
 
-xmodmap /home/krl/.xmodmap
