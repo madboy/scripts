@@ -6,7 +6,7 @@ from random import randint
 alphabet = [char for char in printable if char not in whitespace]
 
 def get_pass(length=14):
-    print(''.join([alphabet[randint(0, len(alphabet)-1)] for _ in xrange(length)]))
+    print(''.join([alphabet[randint(0, len(alphabet)-1)] for _ in range(length)]))
 
 if __name__ == '__main__':
     import sys
